@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المحوّل الصوتي العربي | Arabic Speech to Text</title>
+    <!-- Google Fonts: Cairo -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="background-decor"></div>
+
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo-badge">
+                <span class="icon">🎙️</span>
+                <span>الذكاء الصوتي</span>
+            </div>
+            <h1>تحويل الصوت إلى نص باللغة العربية</h1>
+            <p class="subtitle">سجّل صوتك مباشرةً عبر الميكروفون أو ارفع ملف صوتي ليتم تحويله إلى نص عربي فوري بدقة عالية وبدون أي استهلاك لموارد جهازك.</p>
+        </header>
+
+        <!-- Main Card -->
+        <main class="main-card">
+            <!-- Mode Switcher Tabs -->
+            <div class="tabs">
+                <button class="tab-btn active" id="tab-mic" onclick="switchTab('mic')">
+                    <span class="tab-icon">🎙️</span>
+                    <span>تسجيل مباشر بالميكروفون</span>
+                </button>
+                <button class="tab-btn" id="tab-file" onclick="switchTab('file')">
+                    <span class="tab-icon">📁</span>
+                    <span>رفع ملف صوتي</span>
+                </button>
+            </div>
+
+            <!-- Tab 1: Microphone Section -->
+            <section id="mic-section" class="tab-content active">
+                <div class="lang-selector-wrapper">
+                    <label for="mic-language">اللهجة / الدولة:</label>
+                    <select id="mic-language" class="select-input">
+                        <option value="ar-EG" selected>العربية (مصر 🇪🇬)</option>
+                        <option value="ar-SA">العربية (السعودية والفصحى 🇸🇦)</option>
+                        <option value="ar-AE">العربية (الإمارات 🇦🇪)</option>
+                        <option value="ar-KW">العربية (الكويت 🇰🇼)</option>
+                        <option value="ar-DZ">العربية (الجزائر 🇩🇿)</option>
+                        <option value="ar-MA">العربية (المغرب 🇲🇦)</option>
+                        <option value="ar-JO">العربية (الأردن 🇯🇴)</option>
+                    </select>
+                </div>
+
+                <div class="mic-controls">
+                    <button id="mic-toggle-btn" class="mic-btn" title="اضغط لبدء التسجيل">
+                        <div class="pulse-ring"></div>
+                        <span class="mic-icon" id="mic-icon">🎤</span>
+                    </button>
+                    <div class="mic-status-container">
+                        <p id="mic-status" class="status-text">اضغط على الميكروفون للبدء بالتحدث</p>
+                        <span id="recording-timer" class="timer-badge hidden">00:00</span>
+                    </div>
+                </div>
+
+                <!-- Live wave animation (visible during recording) -->
+                <div id="sound-wave" class="sound-wave hidden">
+                    <span></span><span></span><span></span><span></span><span></span>
+                </div>
+            </section>
+
+            <!-- Tab 2: File Upload Section -->
+            <section id="file-section" class="tab-content">
+                <div class="drop-zone" id="drop-zone">
+                    <input type="file" id="audio-file-input" accept="audio/*,.wav,.mp3,.ogg,.m4a" class="file-input-hidden">
+                    <div class="drop-zone-content">
+                        <div class="upload-icon">📤</div>
+                        <h3>اسحب الملف الصوتي وأفلته هنا</h3>
+                        <p>أو <span class="browse-link">تصفح من جهازك</span> (يدعم صيغ WAV, MP3, M4A, OGG)</p>
+                    </div>
+                </div>
+
+                <div id="file-info-card" class="file-info-card hidden">
+                    <div class="file-details">
+                        <span class="file-icon">🎵</span>
+                        <div class="file-texts">
+                            <strong id="file-name">اسم الملف</strong>
+                            <small id="file-size">الحجم</small>
+                        </div>
+                    </div>
+                    <audio id="audio-preview" controls class="audio-player"></audio>
+                    
+                    <button id="transcribe-file-btn" class="action-btn primary-btn">
+                        <span class="btn-icon">⚡</span>
+                        <span>بدء استخراج النص</span>
+                    </button>
+                </div>
+
+                <div id="file-loading" class="loading-indicator hidden">
+                    <div class="spinner"></div>
+                    <p id="loading-msg">جاري معالجة الصوت وتحويله إلى نص عربي...</p>
+                </div>
+            </section>
+
+            <!-- Result Section -->
+            <section class="result-section">
+                <div class="result-header">
+                    <h3>النص المستخرج:</h3>
+                    <div class="result-stats">
+                        <span id="word-count" class="stat-pill">0 كلمة</span>
+                        <span id="char-count" class="stat-pill">0 حرف</span>
+                    </div>
+                </div>
+
+                <div class="result-box-container">
+                    <textarea id="result-text" class="result-textarea" placeholder="سيظهر النص المحوّل هنا مباشرةً..." rows="6"></textarea>
+                    
+                    <div class="action-toolbar">
+                        <button id="copy-btn" class="tool-btn" title="نسخ إلى الحافظة">
+                            <span>📋</span>
+                            <span>نسخ النص</span>
+                        </button>
+                        <button id="speak-btn" class="tool-btn" title="الاستماع إلى النص">
+                            <span>🔊</span>
+                            <span>استماع</span>
+                        </button>
+                        <button id="download-btn" class="tool-btn" title="تحميل كملف نصي">
+                            <span>💾</span>
+                            <span>حفظ (.txt)</span>
+                        </button>
+                        <button id="clear-btn" class="tool-btn danger" title="مسح النص">
+                            <span>🗑️</span>
+                            <span>مسح</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Toast notification for feedback -->
+                <div id="toast" class="toast">تم النسخ بنجاح!</div>
+            </section>
+        </main>
+
+        <!-- Footer / Notes -->
+        <footer class="footer">
+            <p>💡 يعمل هذا التطبيق بتقنية سحابية خفيفة بدون الحاجة إلى تحميل نماذج ذكاء اصطناعي ضخمة على جهازك.</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
